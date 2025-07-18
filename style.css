@@ -195,3 +195,14 @@ select:focus, input:focus {
   box-shadow: 0 2px 8px #43e97b22;
 }
 
+.gantt-block {
+  display: inline-block;
+  margin-right: 2px;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 6px;
+  position: relative;
+  font-weight: bold;
+  opacity: 0; /* starts invisible, fades in via JS */
+}
