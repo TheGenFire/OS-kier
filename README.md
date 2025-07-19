@@ -62,9 +62,13 @@ SCREENSHOTS FOR DIFFERENT ALGORITHMS OUTPUT:
                                                                                                   LIMITATIONS
 
 -Context switching time is not simulated
+
 -No support for I/O-bound processes
+
 -Identical arrival times may cause unpredictable results in MLFQ
+
 -No pause/resume during animation (yet)
+
 -Designed for single-core CPU only
 
                                                                                           Member Roles & Contributions
