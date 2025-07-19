@@ -204,5 +204,11 @@ select:focus, input:focus {
   border-radius: 6px;
   position: relative;
   font-weight: bold;
-  opacity: 0; /* starts invisible, fades in via JS */
+  opacity: 0; /* Start hidden, will fade in */
+  overflow: hidden; /* Ensures inner text doesn't spill during growth */
+  transition: width 0.5s ease-out, opacity 0.5s ease-in; /* <--- key addition */
+  background: linear-gradient(135deg, #42a5f5 60%, #66bb6a 100%);
+  border-bottom: 3px solid #fff;
+  font-size: 1.1em;
+  box-shadow: 0 2px 8px #0002;
 }
