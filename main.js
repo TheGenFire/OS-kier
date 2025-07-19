@@ -100,10 +100,10 @@ document.getElementById('scheduler-form').onsubmit = function(e) {
   else if (algo === 'rr') simulateRR(procs, gantt, rrQuantum);
   else if (algo === 'mlfq') simulateMLFQ(procs, gantt, mlfqQuanta, mlfqAllot);
 
-  // Render Gantt Chart
-  const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#f44336', '#8bc34a', '#ffc107', '#3f51b5'];
-  const queueColors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63'];
-  const ganttDiv = document.getElementById('gantt');
+  // Render Gantt Chart with growth animation
+const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#f44336', '#8bc34a', '#ffc107', '#3f51b5'];
+const queueColors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63'];
+const ganttDiv = document.getElementById('gantt');
 ganttDiv.innerHTML = '';
 let animationDelay = 0;
 const timeUnit = 500; // milliseconds per unit of time
@@ -112,17 +112,20 @@ gantt.forEach((g, i) => {
   setTimeout(() => {
     const block = document.createElement('div');
     block.className = 'gantt-block';
-    block.style.width = `${(g.end - g.start) * 40}px`;
+    block.style.width = '0px'; // Start with 0 width
     block.style.height = '40px';
-    block.style.background = g.queue !== undefined && g.queue >= 0 ? queueColors[g.queue % 4] : colors[i % colors.length];
+    block.style.background = g.queue !== undefined && g.queue >= 0
+      ? queueColors[g.queue % 4]
+      : colors[i % colors.length];
     block.style.opacity = '0';
     block.innerHTML = `P${g.pid}${g.queue !== undefined && g.queue >= 0 ? `<sub>Q${g.queue}</sub>` : ''}<span>${g.start}</span>`;
-    
+
     ganttDiv.appendChild(block);
-    
-    // Trigger fade-in
+
+    // Trigger growth and fade-in
     requestAnimationFrame(() => {
-      block.style.transition = 'opacity 0.5s ease-in';
+      block.style.transition = 'width 0.5s ease-out, opacity 0.5s ease-in';
+      block.style.width = `${(g.end - g.start) * 40}px`;
       block.style.opacity = '1';
     });
 
@@ -136,9 +139,10 @@ gantt.forEach((g, i) => {
       block.appendChild(end);
     }
   }, animationDelay);
-  
+
   animationDelay += (g.end - g.start) * timeUnit;
 });
+
 
 
   // Render Process Table
