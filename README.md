@@ -68,6 +68,8 @@ SCREENSHOTS FOR DIFFERENT ALGORITHMS OUTPUT:
 -Designed for single-core CPU only
 
                                                                                           Member Roles & Contributions
+                                                                                          
 
 Kier M. Borne ------>  Backend
+
 Jeryk Beluso   ----->  Front End
