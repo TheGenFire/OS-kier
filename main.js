@@ -100,50 +100,83 @@ document.getElementById('scheduler-form').onsubmit = function(e) {
   else if (algo === 'rr') simulateRR(procs, gantt, rrQuantum);
   else if (algo === 'mlfq') simulateMLFQ(procs, gantt, mlfqQuanta, mlfqAllot);
 
-  // Render Gantt Chart with growth animation
-const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#f44336', '#8bc34a', '#ffc107', '#3f51b5'];
-const queueColors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63'];
-const ganttDiv = document.getElementById('gantt');
-ganttDiv.innerHTML = '';
-let animationDelay = 0;
-const timeUnit = 500; // milliseconds per unit of time
-
-gantt.forEach((g, i) => {
-  setTimeout(() => {
+  // Render Gantt Chart with animation
+  const colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4', '#f44336', '#8bc34a', '#ffc107', '#3f51b5'];
+  const queueColors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63'];
+  const ganttDiv = document.getElementById('gantt');
+  ganttDiv.innerHTML = '';
+  const chartWrapper = document.createElement('div');
+  chartWrapper.style.display = 'flex';
+  chartWrapper.style.alignItems = 'flex-start';
+  chartWrapper.style.flexDirection = 'row';
+  chartWrapper.style.position = 'relative';
+  // Helper to create a column (block + tick)
+  function createCol(block, tick) {
+    const col = document.createElement('div');
+    col.style.display = 'flex';
+    col.style.flexDirection = 'column';
+    col.style.alignItems = 'flex-end';
+    col.appendChild(block);
+    col.appendChild(tick);
+    return col;
+  }
+  // First tick (start time)
+  if (gantt.length > 0) {
+    const firstCol = document.createElement('div');
+    firstCol.style.display = 'flex';
+    firstCol.style.flexDirection = 'column';
+    firstCol.style.alignItems = 'flex-start';
+    const emptyBlock = document.createElement('div');
+    emptyBlock.style.height = '40px';
+    emptyBlock.style.width = '0px';
+    firstCol.appendChild(emptyBlock);
+    const firstTick = document.createElement('div');
+    firstTick.textContent = gantt[0].start;
+    firstTick.style.fontSize = '13px';
+    firstTick.style.color = '#333';
+    firstTick.style.fontWeight = 'normal';
+    firstTick.style.marginLeft = '0';
+    firstTick.style.width = '0px';
+    firstTick.style.textAlign = 'left';
+    firstCol.appendChild(firstTick);
+    chartWrapper.appendChild(firstCol);
+  }
+  // Animation: add each bar with a delay
+  function animateGantt(i) {
+    if (i >= gantt.length) return;
+    const g = gantt[i];
     const block = document.createElement('div');
     block.className = 'gantt-block';
-    block.style.width = '0px'; // Start with 0 width
+    block.style.width = `${(g.end - g.start) * 40}px`;
     block.style.height = '40px';
-    block.style.background = g.queue !== undefined && g.queue >= 0
-      ? queueColors[g.queue % 4]
-      : colors[i % colors.length];
+    block.style.background = g.queue !== undefined && g.queue >= 0 ? queueColors[g.queue % 4] : colors[i % colors.length];
+    block.innerHTML = `P${g.pid}${g.queue !== undefined && g.queue >= 0 ? `<sub>Q${g.queue}</sub>` : ''}`;
     block.style.opacity = '0';
-    block.innerHTML = `P${g.pid}${g.queue !== undefined && g.queue >= 0 ? `<sub>Q${g.queue}</sub>` : ''}<span>${g.start}</span>`;
-
-    ganttDiv.appendChild(block);
-
-    // Trigger growth and fade-in
-    requestAnimationFrame(() => {
-      block.style.transition = 'width 0.5s ease-out, opacity 0.5s ease-in';
-      block.style.width = `${(g.end - g.start) * 40}px`;
+    block.style.transform = 'scaleX(0.7)';
+    // Tick (end time)
+    const tick = document.createElement('div');
+    tick.textContent = g.end;
+    tick.style.fontSize = '13px';
+    tick.style.color = '#333';
+    tick.style.fontWeight = 'normal';
+    tick.style.width = `${(g.end - g.start) * 40}px`;
+    tick.style.textAlign = 'right';
+    tick.style.opacity = '0';
+    // Add to chart
+    const col = createCol(block, tick);
+    chartWrapper.appendChild(col);
+    // Animate in
+    setTimeout(() => {
+      block.style.transition = 'opacity 0.4s, transform 0.4s';
       block.style.opacity = '1';
-    });
-
-    // Add end time to the last block
-    if (i === gantt.length - 1) {
-      const end = document.createElement('span');
-      end.textContent = g.end;
-      end.style.position = 'absolute';
-      end.style.right = '0';
-      end.style.bottom = '-18px';
-      block.appendChild(end);
-    }
-  }, animationDelay);
-
-  animationDelay += (g.end - g.start) * timeUnit;
-});
-
-
+      block.style.transform = 'scaleX(1)';
+      tick.style.transition = 'opacity 0.4s';
+      tick.style.opacity = '1';
+    }, 80);
+    setTimeout(() => animateGantt(i + 1), 180);
+  }
+  ganttDiv.appendChild(chartWrapper);
+  animateGantt(0);
 
   // Render Process Table
   let table = `<table><tr>
@@ -208,6 +241,8 @@ function simulateSRTF(procs, gantt) {
   let time = 0, done = 0, n = procs.length;
   let rem = procs.map(p => p.burstTime);
   let started = Array(n).fill(false);
+  let lastPid = null;
+  let lastBlock = null;
   while (done < n) {
     let idx = -1, minRem = Infinity;
     for (let i = 0; i < n; i++) {
@@ -221,7 +256,14 @@ function simulateSRTF(procs, gantt) {
       procs[idx].response = time - procs[idx].arrivalTime;
       started[idx] = true;
     }
-    gantt.push({ start: time, end: time + 1, pid: procs[idx].id });
+    // Merge consecutive blocks for the same process
+    if (lastBlock && lastPid === procs[idx].id) {
+      lastBlock.end = time + 1;
+    } else {
+      lastBlock = { start: time, end: time + 1, pid: procs[idx].id };
+      gantt.push(lastBlock);
+      lastPid = procs[idx].id;
+    }
     rem[idx]--;
     time++;
     if (rem[idx] === 0) {
