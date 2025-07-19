@@ -106,12 +106,15 @@ select:focus, input:focus {
 }
 #gantt {
   display: flex;
+  flex-wrap: nowrap;            /* Prevents line wrapping */
   align-items: flex-end;
   margin: 24px 0 16px 0;
   min-height: 60px;
-  overflow-x: auto;
+  overflow-x: auto;             /* Enables horizontal scroll */
   padding-bottom: 10px;
+  white-space: nowrap;          /* Avoids wrapping to new line */
 }
+
 .gantt-block {
   color: #fff;
   margin-right: 3px;
@@ -127,7 +130,9 @@ select:focus, input:focus {
   justify-content: center;
   background: linear-gradient(135deg, #42a5f5 60%, #66bb6a 100%);
   border-bottom: 3px solid #fff;
+  flex: 0 0 auto;
 }
+
 .gantt-block:hover {
   transform: scale(1.10);
   z-index: 2;
@@ -195,20 +200,3 @@ select:focus, input:focus {
   box-shadow: 0 2px 8px #43e97b22;
 }
 
-.gantt-block {
-  display: inline-block;
-  margin-right: 2px;
-  color: white;
-  text-align: center;
-  line-height: 40px;
-  border-radius: 6px;
-  position: relative;
-  font-weight: bold;
-  opacity: 0; /* Start hidden, will fade in */
-  overflow: hidden; /* Ensures inner text doesn't spill during growth */
-  transition: width 0.5s ease-out, opacity 0.5s ease-in; /* <--- key addition */
-  background: linear-gradient(135deg, #42a5f5 60%, #66bb6a 100%);
-  border-bottom: 3px solid #fff;
-  font-size: 1.1em;
-  box-shadow: 0 2px 8px #0002;
-}
