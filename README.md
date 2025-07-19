@@ -23,31 +23,28 @@ HOW TO RUN THE SIMULATION
 No server or installation needed. Works entirely in the browser.
 
 
+
+
 SCHEDULING ALGORITHMS IMPLEMENTED
 
 FCFS (First-Come, First-Served)
-  -Non-preemptive.
-  -Executes processes in order of arrival.
+  - Non-preemptive.
+  - Executes processes in order of arrival.
 
 SJF (Shortest Job First)
   - Non-preemptive.
   - Selects the job with the shortest burst time among ready processes.
 
 SRTF (Shortest Remaining Time First)
-Preemptive version of SJF.
-
-If a shorter job arrives, it preempts the currently running process.
+  - Preemptive version of SJF.
+  - If a shorter job arrives, it preempts the currently running process.
 
 Round Robin
-Preemptive.
-
-Processes are given a fixed time slice (quantum).
-
-After that, they are moved to the back of the queue if not finished.
+  - Preemptive.
+  - Processes are given a fixed time slice (quantum).
+  - After that, they are moved to the back of the queue if not finished.
 
 MLFQ (Multilevel Feedback Queue)
-Preemptive and priority-based.
-
-Uses multiple queues with different time quantums.
-
-Jobs move to lower priority queues if they consume their quantum.
+  - Preemptive and priority-based.
+  - Uses multiple queues with different time quantums.
+  - Jobs move to lower priority queues if they consume their quantum.
