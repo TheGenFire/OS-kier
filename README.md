@@ -59,15 +59,15 @@ SCREENSHOTS FOR DIFFERENT ALGORITHMS OUTPUT:
 <img width="939" height="779" alt="image" src="https://github.com/user-attachments/assets/ca4108f2-e9a8-42f8-a04d-8bf7eed0c648" />
 
 
-LIMITATIONS
-Context switching time is not simulated
+                                                                                                  LIMITATIONS
 
-No support for I/O-bound processes
+-Context switching time is not simulated
+-No support for I/O-bound processes
+-Identical arrival times may cause unpredictable results in MLFQ
+-No pause/resume during animation (yet)
+-Designed for single-core CPU only
 
-Identical arrival times may cause unpredictable results in MLFQ
+                                                                                          Member Roles & Contributions
 
-No pause/resume during animation (yet)
-
-Designed for single-core CPU only
-
-
+Kier M. Borne ------>  Backend
+Jeryk Beluso   ----->  Front End
