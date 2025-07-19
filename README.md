@@ -48,3 +48,26 @@ MLFQ (Multilevel Feedback Queue)
   - Preemptive and priority-based.
   - Uses multiple queues with different time quantums.
   - Jobs move to lower priority queues if they consume their quantum.
+    
+
+SCREENSHOTS FOR DIFFERENT ALGORITHMS OUTPUT:
+
+<img width="958" height="910" alt="image" src="https://github.com/user-attachments/assets/40c805e0-30fd-49bc-9b10-5e253442a1ca" />
+<img width="947" height="884" alt="image" src="https://github.com/user-attachments/assets/4a63aa9b-aa37-4447-8391-12049b5404b9" />
+<img width="965" height="879" alt="image" src="https://github.com/user-attachments/assets/7568b86b-38ef-4fc6-aa4d-d55e3500b533" />
+<img width="986" height="862" alt="image" src="https://github.com/user-attachments/assets/fa9716df-2c0f-411a-908d-bce484e52303" />
+<img width="939" height="779" alt="image" src="https://github.com/user-attachments/assets/ca4108f2-e9a8-42f8-a04d-8bf7eed0c648" />
+
+
+LIMITATIONS
+Context switching time is not simulated
+
+No support for I/O-bound processes
+
+Identical arrival times may cause unpredictable results in MLFQ
+
+No pause/resume during animation (yet)
+
+Designed for single-core CPU only
+
+
