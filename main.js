@@ -194,6 +194,88 @@ document.getElementById('scheduler-form').onsubmit = function(e) {
   table += '</table>';
   document.getElementById('result-table').innerHTML = table;
 
+  // Add Export CSV button if not already present
+  let exportBtn = document.getElementById('export-csv-btn');
+  if (!exportBtn) {
+    exportBtn = document.createElement('button');
+    exportBtn.id = 'export-csv-btn';
+    exportBtn.textContent = 'Export Results (CSV)';
+    exportBtn.style.margin = '12px 0 0 0';
+    exportBtn.style.padding = '8px 22px';
+    exportBtn.style.border = 'none';
+    exportBtn.style.background = 'linear-gradient(90deg, #42a5f5 60%, #66bb6a 100%)';
+    exportBtn.style.color = '#fff';
+    exportBtn.style.borderRadius = '6px';
+    exportBtn.style.cursor = 'pointer';
+    exportBtn.style.fontWeight = 'bold';
+    exportBtn.style.fontSize = '1em';
+    exportBtn.style.boxShadow = '0 2px 8px #2196f344';
+    exportBtn.style.transition = 'background 0.2s, box-shadow 0.2s, transform 0.1s';
+    exportBtn.onmouseover = function() {
+      exportBtn.style.background = 'linear-gradient(90deg, #66bb6a 60%, #42a5f5 100%)';
+      exportBtn.style.boxShadow = '0 4px 16px #2196f366';
+      exportBtn.style.transform = 'translateY(-2px) scale(1.04)';
+    };
+    exportBtn.onmouseout = function() {
+      exportBtn.style.background = 'linear-gradient(90deg, #42a5f5 60%, #66bb6a 100%)';
+      exportBtn.style.boxShadow = '0 2px 8px #2196f344';
+      exportBtn.style.transform = 'none';
+    };
+    document.getElementById('results').insertBefore(exportBtn, document.getElementById('result-table'));
+  }
+
+  // Export CSV logic
+  exportBtn.onclick = function() {
+    let csv = '';
+    // Section 1: Given Processes
+    csv += 'Given Processes\n';
+    csv += 'PID,Arrival,Burst\n';
+    processes.forEach(p => {
+      csv += `P${p.id},${p.arrivalTime},${p.burstTime}\n`;
+    });
+    csv += '\n';
+
+    // Section 2: Gantt Chart Details
+    csv += 'Gantt Chart Details\n';
+    csv += 'PID,Start,End';
+    if (gantt.length && gantt[0].queue !== undefined) csv += ',Queue';
+    csv += '\n';
+    gantt.forEach(g => {
+      csv += `P${g.pid},${g.start},${g.end}`;
+      if (g.queue !== undefined) csv += `,Q${g.queue}`;
+      csv += '\n';
+    });
+    csv += '\n';
+
+    // Section 3: Results Table
+    csv += 'Results Table\n';
+    csv += 'PID,Arrival,Burst,Completion,Turnaround,Response\n';
+    procs.forEach(g => {
+      csv += `P${g.id},${g.arrivalTime},${g.burstTime},${g.completion},${g.turnaround},${g.response}\n`;
+    });
+    csv += '\n';
+
+    // Section 4: Summary Statistics
+    csv += 'Summary Statistics\n';
+    const avgTAT = (procs.reduce((a, g) => a + g.turnaround, 0) / procs.length).toFixed(2);
+    const avgRT = (procs.reduce((a, g) => a + g.response, 0) / procs.length).toFixed(2);
+    csv += `Average Turnaround Time,${avgTAT}\n`;
+    csv += `Average Response Time,${avgRT}\n`;
+
+    // Download
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cpu_scheduler_results.csv';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  };
+
   // Render Summary Statistics
   const avgTAT = (procs.reduce((a, g) => a + g.turnaround, 0) / procs.length).toFixed(2);
   const avgRT = (procs.reduce((a, g) => a + g.response, 0) / procs.length).toFixed(2);
